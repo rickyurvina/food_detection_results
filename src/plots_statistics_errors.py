@@ -5,6 +5,8 @@ from save_results import create_folder
 def plots_statistics_box_plots(error_statistics):
     df = error_statistics.drop(columns=['app_id'])
     # Crear un gráfico de caja de bigotes para cada nutriente
+    plt.rc('font', size=12)
+
     save_dir = create_folder('error_statistics')
     for nutrient in df['nutrient'].unique():
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -24,9 +26,9 @@ def plots_statistics_box_plots(error_statistics):
             max_error = max(max_error, max(error_values))
             min_error = min(min_error, min(error_values))
         ax.set_xticks([])
-        plt.title(f'Boxplot of Error for {nutrient}', fontsize=16)
+        plt.title(f'Error for {nutrient}', fontsize=16)
         plt.xlabel('App Name', fontsize=14)
-        plt.ylabel(f'Error ({nutrient.capitalize()} - {get_unit(nutrient)})', fontsize=14)
+        plt.ylabel(f'{nutrient.capitalize()} - {get_unit(nutrient)}', fontsize=14)
         # Ajustar el límite del eje y para dejar espacio para los nombres de las aplicaciones en la parte superior
         plt.ylim(0, max_error + 0.1 * (max_error - min_error))
         for i, app_name in zip(positions, app_names):
