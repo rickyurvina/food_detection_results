@@ -4,13 +4,13 @@ import pandas as pd
 from sqlalchemy import create_engine
 from src.error_per_app_and_dishes import calculate_error
 from src.error_statistics import calculate_error_statistics
-from src.plot_errors_per_app_and_dishes import plot_bar_errors
-from src.plots_bar_mean_errors import plot_mean_errors
-from src.plots_statistics_errors import plots_statistics_box_plots
+from src.plots.plot_errors_per_app_and_dishes import plot_bar_errors
+from src.plots.plots_bar_mean_errors import plot_mean_errors
+from src.plots.plots_statistics_errors import plots_statistics_box_plots
 from src.save_results import create_folder
 
 
-def generate_reports():
+def generate_reports(plots=False):
     try:
         # Cargar las variables de entorno desde el archivo .env
         load_dotenv()
@@ -44,20 +44,25 @@ def generate_reports():
         results_data = pd.read_sql(sql_query, engine)
         results_data_with_error = calculate_error(results_data)
         mean_error = calculate_error_statistics(results_data_with_error)
-        plots_charts(results_data, results_data_with_error, mean_error)
-        # save_files(results_data, results_data_with_error, mean_error)
+        if plots:
+            plots_charts(results_data, results_data_with_error, mean_error)
+            save_files(results_data, results_data_with_error, mean_error)
+        return results_data, results_data_with_error, mean_error
 
 
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+        return {}, {}, {}
+
 
 def save_files(results_data, results_data_with_error, mean_error):
     save_dir = create_folder('data_results', is_file=True)
     results_data.to_excel(f'{save_dir}/sum_nutrients_per_app_and_dish.xlsx', index=False)
     results_data_with_error.to_excel(f'{save_dir}/nutrient_errors.xlsx', index=False)
     mean_error.to_excel(f'{save_dir}/error_statistics.xlsx', index=False)
+
+
 def plots_charts(results_data, results_data_with_error, mean_error):
     plots_statistics_box_plots(mean_error)
     plot_bar_errors(results_data_with_error)
     plot_mean_errors(mean_error)
-

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from save_results import create_folder
+from src.save_results import create_folder
 
 
 def plots_statistics_box_plots(error_statistics):
